@@ -37,6 +37,14 @@ namespace InteractionSystem.Runtime.UI
             UpdateProgress(0f);
         }
 
+        public void SetText(string text)
+        {
+            if (m_PromptText != null)
+            {
+                m_PromptText.text = text;
+            }
+        }
+
 
         public void Hide()
         {

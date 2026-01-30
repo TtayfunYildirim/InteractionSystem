@@ -10,6 +10,7 @@ namespace InteractionSystem.Runtime.Interactables
 
         [Header("Settings")]
         [SerializeField] private bool m_IsLocked = false;
+        [SerializeField] private bool m_RequiresLever = false;
         [SerializeField] private KeyData m_RequiredKey;
 
         [Header("Animation")]
@@ -18,7 +19,7 @@ namespace InteractionSystem.Runtime.Interactables
         [SerializeField] private float m_Speed = 2f;
 
         // IInteractable Implementation
-        public string InteractionPrompt => m_IsLocked ? "Locked (Requires Key)" : (m_IsOpen ? "Close Door" : "Open Door");
+        public string InteractionPrompt => GetDoorPrompt();
         public InteractionType Type => InteractionType.Toggle;
         public float HoldDuration => 0f;
 
@@ -53,6 +54,28 @@ namespace InteractionSystem.Runtime.Interactables
 
         #region Methods
 
+        public string GetDoorPrompt()
+        {
+            if (m_IsOpen)
+                return "Close Door";
+
+            else
+            {
+                if (m_IsLocked && m_RequiresLever)
+                    return "Door is locked (Maybe there is another way to open it?)";
+                else if (m_IsLocked && !m_RequiresLever)
+                {
+                    return "Door is locked (Requires a Key)";
+                }
+                else if (!m_IsLocked)
+                {
+                    return "Open Door";
+                }
+            }
+
+            return "Error (There is something wrong with this door!)";
+        }
+
         public bool Interact(GameObject interactor)
         {
             if (m_IsLocked)
@@ -62,10 +85,9 @@ namespace InteractionSystem.Runtime.Interactables
 
                 if (inventory != null && m_RequiredKey != null && inventory.HasKey(m_RequiredKey))
                 {
-                    m_IsLocked = false;
                     Debug.Log("Door unlocked!");
                     // When opened stay opened.
-                    m_IsOpen = true;
+                    Open();
                     return true;
                 }
                 else
@@ -77,6 +99,15 @@ namespace InteractionSystem.Runtime.Interactables
 
             m_IsOpen = !m_IsOpen;
             return true;
+        }
+
+        // This extra function is for adding different requirements to open up a door. (Ex: Lever or a key)
+        public void Open()
+        {
+            m_IsOpen = true;
+            m_IsLocked = false;
+
+
         }
 
         #endregion

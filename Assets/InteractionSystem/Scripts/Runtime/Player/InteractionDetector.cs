@@ -47,22 +47,27 @@ namespace InteractionSystem.Runtime.Player
 
             if (Physics.Raycast(ray, out RaycastHit hit, m_InteractionRange, m_InteractableLayer))
             {
-                // Checks if the script "IInteractable" is inside the object in order to not create problems with other types of collisions
-                IInteractable interactable = hit.collider.GetComponent<IInteractable>();
+               
+                IInteractable interactable = hit.collider.GetComponentInParent<IInteractable>();
 
                 if (interactable != null)
                 {
-                    // Checks and runs if this is a new interactable object so that we can only show the text once.
+                    
                     if (m_CurrentInteractable != interactable)
                     {
                         m_CurrentInteractable = interactable;
                         m_PromptUI?.Show(m_CurrentInteractable.InteractionPrompt);
                     }
+                    else
+                    {
+                        
+                        m_PromptUI?.SetText(m_CurrentInteractable.InteractionPrompt);
+                    }
                     return;
                 }
             }
 
-            // Dont show the text if there is nothing to see or if the player is far away from the object.
+            // Do not show anything if no collision detected.
             if (m_CurrentInteractable != null)
             {
                 m_CurrentInteractable = null;
