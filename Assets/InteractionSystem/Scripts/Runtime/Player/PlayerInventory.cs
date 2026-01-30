@@ -1,16 +1,22 @@
+using System; // Action i?in gerekli
 using System.Collections.Generic;
 using InteractionSystem.Runtime.Core;
 using UnityEngine;
 
 namespace InteractionSystem.Runtime.Player
 {
-    /// A basic inventory system. (For now it only works for the spesific item which is a key.
     public class PlayerInventory : MonoBehaviour
     {
         #region Fields
 
-        // List of all the collected Keys.
         [SerializeField] private List<KeyData> m_Keys = new List<KeyData>();
+
+        #endregion
+
+        #region Events
+
+        /// Activates when a new key added and throws an event to the UI.
+        public event Action<KeyData> OnKeyAdded;
 
         #endregion
 
@@ -22,6 +28,9 @@ namespace InteractionSystem.Runtime.Player
             {
                 m_Keys.Add(key);
                 Debug.Log($"Key added: {key.KeyName}");
+
+                // Invoke the event.
+                OnKeyAdded?.Invoke(key);
             }
         }
 
